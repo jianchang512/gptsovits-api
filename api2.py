@@ -93,7 +93,7 @@ Linux下命令去掉 .\runtime\即可
 `-hp` `使用半精度`
 `-hb` `cnhubert路径`
 `-b`  `bert路径`
-
+`-c`  1-5, 默认5，代表按标点符号切分。 1=凑四句一切 2=凑50字一切  3=按中文句号。切  4=按英文句号.切  5=按标点符号切
 
 
 ## API调用:
@@ -166,6 +166,7 @@ parser.add_argument("-dl", "--default_refer_language", type=str, default="", hel
 parser.add_argument("-d", "--device", type=str, default=device, help="cuda / cpu / mps")
 parser.add_argument("-a", "--bind_addr", type=str, default='127.0.0.1', help="default: 127.0.0.1")
 parser.add_argument("-p", "--port", type=int, default='9880', help="default: 9880")
+parser.add_argument("-c", "--cut", type=int, default=5, help="default: 5 按标点符号切分")
 parser.add_argument("-fp", "--full_precision", action="store_true", default=False, help="覆盖config.is_half为False, 使用全精度")
 parser.add_argument("-hp", "--half_precision", action="store_true", default=False, help="覆盖config.is_half为True, 使用半精度")
 
@@ -565,9 +566,18 @@ def get_tts_wav(*,refer_wav_path, prompt_text, prompt_language="zh", text="", te
    
         prompt_semantic = codes[0, 0]
     t1 = ttime()
+    print(f'{args.cut=}')
+    if (args.cut == 1):
+        text = cut1(text)
+    elif (args.cut == 2):
+        text = cut2(text)
+    elif (args.cut == 3):
+        text = cut3(text)
+    elif (args.cut == 4):
+        text = cut4(text)
+    elif (args.cut == 5):
+        text = cut5(text)
 
-
-    text = cut5(text)
     while "\n\n" in text:
         text = text.replace("\n\n", "\n")
     print(("实际输入的目标文本(切句后):"), text)
